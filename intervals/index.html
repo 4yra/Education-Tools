@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Questrial">
+    <link rel="stylesheet" href="./static/style.css">
+    <title>Take A Breake</title>
+
+</head>
+<style>
+    :root {
+        --gradient: 10%; 
+        --gradient2: 50%; 
+    }
+    .gradient {
+        background: rgb(0,0,0);
+background: linear-gradient(90deg,
+        rgb(0, 0, 0) 0%,
+        rgba(9,9,121,1) calc(var(--gradient) - 5%),
+        rgba(0,212,255,1) calc(var(--gradient2) - 5%))
+    }
+    .hide {
+        display: none;
+    }
+</style>
+
+<body class="gradient" onload="clock_time(), document.getElementById('start').classList.remove('hide')">
+    <div id="clock_div">
+        <h2 id="clock"></h2>
+        <p>Taking breaks is good</p>
+        <p>Time will be randomly chosen each cycle</p>
+        <div style=" text-align: left;" class="">
+            <input style="width: 30px;" type="number" value="1"  id="min_time">
+            <label for="min_time">Minimum Time</label><br>
+            <input style="width: 30px;" type="number" value="10" id="max_time">
+            <label for="max_time">Maximum Time</label><br>
+            <input style="width: 30px;" type="number" value="10" id="break">
+            <label for="max_time">Break Time seconds</label>
+            <br>
+        </div>
+        <button id="start" class="hide" onclick="set_time(), toggle_start_stop()">start</button>
+        <button id="stop" class="hide" onclick="stop(), toggle_start_stop()">Stop</button>
+        <!-- <button onclick="time(3, 7)">test</button> -->
+    </div>
+    <br> <p style="display: inline;">Sleep Time</p>
+    <p id="time"></p>
+    <span id="percent"></span>
+
+    
+    <br>
+    <span id="test"></span>
+</body>
+<script src="./static/clock.js"></script>
+<script>
+
+    function toggle_start_stop() {
+        document.getElementById('stop').classList.toggle('hide')
+        document.getElementById('start').classList.toggle('hide')
+    }
+    function set_time() {
+        var lower_limit = document.getElementById('min_time').value
+        var upper_limit = document.getElementById('max_time').value
+        var break_time = document.getElementById('break').value * 1000
+        console.log(lower_limit, upper_limit, break_time);
+        var time = 0
+        let random_int = Math.floor(Math.random() * 10)
+        if(random_int < lower_limit) {
+            time = lower_limit
+        }
+        else if (random_int > upper_limit) {
+            time = upper_limit
+        }
+        else {
+            time = random_int
+        }
+        time = time * 10 * 60
+        console.log(random_int, time);
+        start(time, break_time)
+    }
+
+    function start(time_, break_time) {
+        var sound = new Audio('./sound/soft-tone-001-9755.mp3')
+        sound.play()
+        let time = time_
+        var grad = 100
+        var grad2 = 130
+        var count = grad / time
+        var sound= document.getElementById('sound')
+
+        var gr = document.querySelector(':root')
+        document.getElementById('time').innerHTML = time/10/60 + 'm'
+        
+        time_brake = setInterval(function() {
+            time = time - 1
+            grad = grad - count
+            grad2 = grad2 - count
+            grad = grad.toFixed(2)
+            document.getElementById('percent').innerHTML = grad 
+
+            gr.style.setProperty('--gradient', `${grad}%`)
+            gr.style.setProperty('--gradient2', `${grad2}%`)
+            if (grad < 0){
+                stop()
+                var sound = new Audio('./sound/wheep-wheep-101146.mp3')
+                sound.play()
+                setTimeout(set_time, break_time)
+            }
+        }, 100)
+    }
+    
+    function stop() {        
+        clearInterval(time_brake)
+        time_brake = null
+    }
+</script>
+</html>
