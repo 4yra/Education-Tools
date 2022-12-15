@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>Drawing App</title>
+</head>
+<body>
+    <section class="container">
+        <div id="toolbar">
+            <h1>Draw</h1>
+            <label for="stroke">Stroke</label>
+            <input id="stroke" name="stroke" type="color">
+            
+            <label for="lineWidth">Line Width</label>
+            <input id="lineWidth" name="lineWidth" type="number" value="22">
+            <button id="clear">Clear</button>
+            <button id="predict">Predict</button>
+        </div>
+        <div class="drawing-board">
+            <canvas id="drawing-board"></canvas>
+        </div>
+    </section>
+    <h1 style="text-align: center;" id="model_prediction"></h1>
+    <script src="../static/index.js"></script>
+</body>
+
+<script>
+    const predict = document.getElementById('predict')
+    predict.addEventListener('click', function (e) {
+        const link = document.createElement('a')
+        link.href = canvas.toDataURL()
+        let link_str = String(link.href.slice(22,))
+
+        let data = {
+            'link': link_str
+        }
+        fetch("/predict/", {
+            "method": "POST",
+            "headers": {"Content-Type": "application/json"},
+            "body": JSON.stringify(data),
+        }).then(function (response) {
+                return response.json();
+            }).then(function (text) {
+                console.log('GET response:');
+                console.log(text.resp);
+                document.getElementById('model_prediction').innerHTML = text.resp
+            });
+
+})
+</script>
+</html>
